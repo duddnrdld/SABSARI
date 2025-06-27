@@ -1,0 +1,21 @@
+body {
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 2rem;
+  background-color: #fff8e1;
+}
+.container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 1rem;
+  background-color: #ffffffcc;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px #ccc;
+}
+input, select, button {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  width: 80%;
+  font-size: 1rem;
+}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="5;url={{ url_for('result') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>운세보기</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .gif-wrapper {
+      margin-top: 2rem;
+    }
+    img {
+      width: 80%;
+      max-width: 400px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>사브사리가 오늘의 운세를 점치는 중...</h2>
+    <div class="gif-wrapper">
+      <img src="{{ url_for('static', filename='gif/fortune.gif') }}" alt="운세 보는 중">
+    </div>
+  </div>
+</body>
+</html>

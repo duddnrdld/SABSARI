@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>인사하기</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h2>만나서 반가워,<br>오늘의 운세를 보고싶어?</h2>
+
+    <form action="{{ url_for('fortune') }}">
+      <button type="submit">오늘의 운세 보기</button>
+    </form>
+  </div>
+</body>
+</html>

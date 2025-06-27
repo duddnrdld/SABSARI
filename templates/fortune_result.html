@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>오늘의 운세 결과</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .score {
+      font-size: 4rem;
+      color: #ff6f61;
+      margin: 2rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✨ 오늘의 운세 점수 ✨</h2>
+    <div class="score">{{ score }}점</div>
+    <p>행운이 가득하길 바랄게!</p>
+  </div>
+</body>
+</html>
