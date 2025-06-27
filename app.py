@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import json, os
 
 app = Flask(__name__)
+app.secret_key = "sabsari-super-secret-key"  # 세션을 위한 시크릿 키 설정
+
 
 DATA_FILE = "data/users.json"
 
@@ -13,6 +15,9 @@ if not os.path.exists(DATA_FILE):
 
 @app.route("/", methods=["GET", "POST"])
 def name_input():
+    if session.get("named"):  # 이름 이미 지었으면 바로 /greeting 이동
+        return redirect(url_for("greeting"))
+
     if request.method == "POST":
         name = request.form["name"]
         birth = request.form["birth"]
@@ -31,6 +36,7 @@ def name_input():
         with open(DATA_FILE, "w") as f:
             json.dump(data, f)
 
+        session["named"] = True  # 이름 지은 기록 세션에 저장
         return redirect(url_for("greeting"))
 
     return render_template("name_input.html")
