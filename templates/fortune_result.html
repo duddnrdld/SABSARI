@@ -4,20 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>오늘의 운세 결과</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #fff3e0;
+      text-align: center;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+    }
     .score {
       font-size: 4rem;
-      color: #ff6f61;
+      color: #ff7043;
       margin: 2rem 0;
+    }
+    .footer {
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: #777;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>✨ 오늘의 운세 점수 ✨</h2>
+    <h2>✨ {{ name }}의 오늘의 운세 점수 ✨</h2>
     <div class="score">{{ score }}점</div>
     <p>행운이 가득하길 바랄게!</p>
+    <div class="footer">매일매일, {{ name }}와 함께하는 운세 시간 💫</div>
   </div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, make_response
+from flask import Flask, render_template, request, redirect, url_for, make_response
 import sqlite3, uuid, os
 
 app = Flask(__name__)
@@ -35,7 +35,7 @@ def get_user(user_id):
     conn.close()
     return row
 
-# 사용자 등록
+# 사용자 저장
 def save_user(user_id, name, birth, gender, birth_time):
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
@@ -43,7 +43,6 @@ def save_user(user_id, name, birth, gender, birth_time):
                    (user_id, name, birth, gender, birth_time))
     conn.commit()
     conn.close()
-
 
 @app.route("/", methods=["GET", "POST"])
 def name_input():
@@ -63,7 +62,7 @@ def name_input():
         save_user(new_user_id, name, birth, gender, birth_time)
 
         resp = make_response(redirect(url_for("greeting")))
-        resp.set_cookie("user_id", new_user_id, max_age=60*60*24*365)  # 1년
+        resp.set_cookie("user_id", new_user_id, max_age=60*60*24*365)
         return resp
 
     return render_template("name_input.html")
@@ -81,14 +80,24 @@ def greeting():
 
 @app.route("/fortune")
 def fortune():
-    return render_template("fortune_loading.html")
+    user_id = request.cookies.get("user_id")
+    user = get_user(user_id)
+    if not user:
+        return redirect(url_for("name_input"))
+
+    return render_template("fortune_loading.html", name=user[1])
 
 
 @app.route("/result")
 def result():
     import random
     score = random.randint(1, 100)
-    return render_template("fortune_result.html", score=score)
+
+    user_id = request.cookies.get("user_id")
+    user = get_user(user_id)
+    name = user[1] if user else "사브사리"
+
+    return render_template("fortune_result.html", score=score, name=name)
 
 
 if __name__ == "__main__":

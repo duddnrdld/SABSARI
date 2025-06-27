@@ -3,21 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>이름짓기</title>
+  <title>사브사리 이름짓기</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #fff8e1;
+      text-align: center;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      margin-top: 1rem;
+      padding: 0.5rem;
+      width: 90%;
+      font-size: 1rem;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h2>만나서 반가워, 내 이름을 지어줘</h2>
+    <h2>만나서 반가워!<br>내 이름을 지어줘</h2>
 
     <form method="POST">
-      <input type="text" name="name" placeholder="이름을 입력해줘" required><br>
-      <p>개인정보 입력</p>
+      <input type="text" name="name" placeholder="사브사리 이름을 입력해줘 (예: 복토리)" required><br>
+
+      <h4>개인정보 입력</h4>
       <input type="date" name="birth" required><br>
-      <select name="gender">
+
+      <select name="gender" required>
+        <option value="" disabled selected>성별을 선택해줘</option>
         <option value="male">남자</option>
         <option value="female">여자</option>
       </select><br>
+
       <input type="text" name="birth_time" placeholder="태어난 시간 (예: 오전 3시)" required><br>
+
       <button type="submit">입력 완료</button>
     </form>
   </div>

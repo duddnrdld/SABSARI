@@ -3,12 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>인사하기</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <title>사브사리 인사하기</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f9ff;
+      text-align: center;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+    }
+    button {
+      margin-top: 2rem;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      background-color: #ffb74d;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #ffa726;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h2>만나서 반가워,<br>오늘의 운세를 보고싶어?</h2>
+    <h2>{{ name }}야, 오늘의 운세를 보고 싶어?</h2>
 
     <form action="{{ url_for('fortune') }}">
       <button type="submit">오늘의 운세 보기</button>
