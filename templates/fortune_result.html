@@ -4,6 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>오늘의 운세 결과</title>
+
+  <!-- 🟡 Open Graph 메타태그 -->
+  <meta property="og:title" content="사브사리 오늘의 운세 결과">
+  <meta property="og:description" content="{{ name }}의 오늘의 운세 점수는 {{ score }}점!">
+  <meta property="og:image" content="{{ url_for('static', filename='og.png', _external=True) }}">
+  <meta property="og:url" content="{{ request.url }}">
+
+  <!-- 🟡 Kakao SDK -->
+  <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+  <script>
+    Kakao.init('여기에_너의_카카오_JavaScript_키'); // 예: Kakao.init('1234abcd...');
+  </script>
+
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -29,6 +42,27 @@
       font-size: 1rem;
       color: #777;
     }
+    .buttons {
+      margin-top: 2rem;
+    }
+    button {
+      margin: 0.5rem;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      background-color: #ffb74d;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #ffa726;
+    }
+    #copy-msg {
+      margin-top: 1rem;
+      color: green;
+      font-size: 0.9rem;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -36,7 +70,53 @@
     <h2>✨ {{ name }}의 오늘의 운세 점수 ✨</h2>
     <div class="score">{{ score }}점</div>
     <p>행운이 가득하길 바랄게!</p>
+
+    <div class="buttons">
+      <form action="{{ url_for('greeting') }}">
+        <button type="submit">🔄 다시 보기</button>
+      </form>
+      <button onclick="copyLink()">🔗 공유 링크 복사</button>
+      <button onclick="shareKakao()">💬 카카오톡 공유</button>
+      <div id="copy-msg">링크가 복사되었습니다!</div>
+    </div>
+
     <div class="footer">매일매일, {{ name }}와 함께하는 운세 시간 💫</div>
   </div>
+
+  <script>
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href)
+        .then(() => {
+          document.getElementById("copy-msg").style.display = "block";
+          setTimeout(() => {
+            document.getElementById("copy-msg").style.display = "none";
+          }, 2000);
+        });
+    }
+
+    function shareKakao() {
+      Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: '{{ name }}의 오늘의 운세 결과',
+          description: '✨ 점수: {{ score }}점 ✨\n지금 사브사리 운세도 확인해보세요!',
+          imageUrl: "{{ url_for('static', filename='og.png', _external=True) }}",
+          link: {
+            mobileWebUrl: window.location.href,
+            webUrl: window.location.href
+          }
+        },
+        buttons: [
+          {
+            title: '운세 보러 가기',
+            link: {
+              mobileWebUrl: window.location.href,
+              webUrl: window.location.href
+            }
+          }
+        ]
+      });
+    }
+  </script>
 </body>
 </html>
