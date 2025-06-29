@@ -1,12 +1,15 @@
+# app.py (Flask 백엔드 수정)
 from flask import Flask, render_template, request, redirect, url_for, session
 import json, os, random
 
 app = Flask(__name__)
-app.secret_key = "sabsari-super-secret-key"
+app.secret_key = "sabsari-secret-key"
 
 DATA_FILE = "data/users.json"
 
+# 초기 데이터 파일 생성
 if not os.path.exists(DATA_FILE):
+    os.makedirs("data", exist_ok=True)
     with open(DATA_FILE, "w") as f:
         json.dump({}, f)
 
@@ -21,6 +24,9 @@ def name_input():
         gender = request.form["gender"]
         birth_time = request.form["birth_time"]
 
+        session["name"] = name
+        session["named"] = True
+
         with open(DATA_FILE, "r") as f:
             data = json.load(f)
         data["user"] = {
@@ -32,56 +38,46 @@ def name_input():
         with open(DATA_FILE, "w") as f:
             json.dump(data, f)
 
-        session["named"] = True
-        session["name"] = name
         return redirect(url_for("greeting"))
 
     return render_template("name_input.html")
 
 @app.route("/greeting")
 def greeting():
-    name = session.get("name", "삽사리")
+    name = session.get("name", "사용자")
     return render_template("greeting.html", name=name)
 
 @app.route("/fortune")
 def fortune():
-    name = session.get("name", "삽사리")
+    name = session.get("name", "사용자")
     return render_template("fortune_loading.html", name=name)
 
 @app.route("/result")
 def result():
-    name = session.get("name", "삽사리")
-
+    name = session.get("name", "사용자")
     love = random.randint(1, 100)
-    social = random.randint(1, 100)
+    relation = random.randint(1, 100)
     money = random.randint(1, 100)
-    average = round((love + social + money) / 3)
+    total = round((love + relation + money) / 3)
 
     def comment(score):
-        if score >= 80:
+        if score >= 85:
             return "아주 좋은 날이에요!"
         elif score >= 60:
             return "기분 좋은 하루가 될 거예요."
-        elif score >= 40:
-            return "작은 주의가 필요해요."
         else:
             return "조심해야 할 하루예요."
 
-    comments = {
-        "love_comment": comment(love),
-        "social_comment": comment(social),
-        "money_comment": comment(money),
-        "total_comment": comment(average),
-    }
-
-    return render_template(
-        "fortune_result.html",
+    return render_template("fortune_result.html",
         name=name,
         love=love,
-        social=social,
+        relation=relation,
         money=money,
-        average=average,
-        **comments
+        total=total,
+        love_msg=comment(love),
+        relation_msg=comment(relation),
+        money_msg=comment(money),
+        total_msg=comment(total)
     )
 
 if __name__ == "__main__":

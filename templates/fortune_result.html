@@ -1,8 +1,9 @@
+<!-- fortune_result.html 수정본 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>사브사리 오늘의 운세 ✨</title>
   <meta property="og:title" content="사브사리 오늘의 운세 결과">
   <meta property="og:description" content="당신의 오늘의 운세를 확인하세요!">
@@ -10,9 +11,10 @@
   <meta property="og:url" content="{{ request.url }}">
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
   <script>
-    Kakao.init('YOUR_KAKAO_JS_KEY');  // 여기에 본인 키 입력
+    Kakao.init('YOUR_KAKAO_JS_KEY');
   </script>
 
   <style>
@@ -23,11 +25,6 @@
       text-align: center;
       color: #333;
     }
-
-    h2 {
-      margin-bottom: 2rem;
-    }
-
     .section-box {
       background: #fff9e6;
       border-radius: 12px;
@@ -37,16 +34,14 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       text-align: left;
     }
-
     canvas {
       margin-top: 1rem;
-      max-width: 100%;
+      width: 100% !important;
+      height: 180px !important;
     }
-
     .buttons {
       margin: 2rem auto;
     }
-
     button {
       margin: 0.5rem;
       padding: 0.7rem 1.5rem;
@@ -55,30 +50,15 @@
       border-radius: 10px;
       cursor: pointer;
     }
-
-    #replay {
-      background-color: #ffcc80;
-    }
-
-    #copy-link {
-      background-color: #ffe082;
-    }
-
-    #kakao-share {
-      background-color: #ffd54f;
-    }
-
-    .footer {
-      margin-top: 2rem;
-      color: #999;
-      font-size: 0.9rem;
-    }
+    #replay { background-color: #ffcc80; }
+    #copy-link { background-color: #ffe082; }
+    #kakao-share { background-color: #ffd54f; }
+    .footer { margin-top: 2rem; color: #999; font-size: 0.9rem; }
   </style>
 </head>
 <body>
   <h2>삽사리의 오늘의 운세 ✨</h2>
 
-  <!-- 🌸 연애/관계/금전운 -->
   <div class="section-box">
     <ul>
       <li>💘 연애운: {{ love }}/100점 – {{ love_msg }}</li>
@@ -88,7 +68,6 @@
     <canvas id="categoryChart"></canvas>
   </div>
 
-  <!-- ☀️ 총운 -->
   <div class="section-box">
     <ul>
       <li>🌟 총운: {{ total }}/100점 – {{ total_msg }}</li>
@@ -96,9 +75,8 @@
     <canvas id="totalChart"></canvas>
   </div>
 
-  <!-- 🔄 버튼 -->
   <div class="buttons">
-    <form action="{{ url_for('greeting') }}">
+    <form action="{{ url_for('fortune') }}">
       <button id="replay" type="submit">🔄 다시 보기</button>
     </form>
     <button id="copy-link" onclick="copyLink()">🔗 공유 링크 복사</button>
@@ -108,48 +86,40 @@
   <div class="footer">오늘도 삽사리와 함께하는 사브사리 🐶</div>
 
   <script>
-    // 📊 카테고리별 운세 그래프
+    Chart.register(ChartDataLabels);
+
     new Chart(document.getElementById("categoryChart"), {
       type: 'bar',
       data: {
         labels: ['연애운', '관계운', '금전운'],
         datasets: [{
-          label: '',
           data: [{{ love }}, {{ relation }}, {{ money }}],
           backgroundColor: ['#ff8a65', '#fbc02d', '#81c784'],
-          borderRadius: 10,
+          borderRadius: 10
         }]
       },
       options: {
         indexAxis: 'y',
+        maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: ctx => `${ctx.raw}점 / 100점`
-            }
-          },
           datalabels: {
-            anchor: 'end',
-            align: 'right',
-            formatter: v => `${v}점 / 100점`
+            align: 'end', anchor: 'end',
+            formatter: v => `${v}점 / 100점`,
+            color: '#333', font: { weight: 'bold' }
           }
         },
         scales: {
           x: {
-            beginAtZero: true,
-            max: 100,
+            beginAtZero: true, max: 100,
             ticks: { display: false },
             grid: { display: false }
           },
-          y: {
-            grid: { display: false }
-          }
+          y: { grid: { display: false } }
         }
       }
     });
 
-    // ☀️ 총운 그래프
     new Chart(document.getElementById("totalChart"), {
       type: 'bar',
       data: {
@@ -157,41 +127,37 @@
         datasets: [{
           data: [{{ total }}],
           backgroundColor: '#ffd54f',
-          borderRadius: 10,
+          borderRadius: 10
         }]
       },
       options: {
         indexAxis: 'y',
+        maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: ctx => `${ctx.raw}점 / 100점`
-            }
+          datalabels: {
+            align: 'end', anchor: 'end',
+            formatter: v => `${v}점 / 100점`,
+            color: '#333', font: { weight: 'bold' }
           }
         },
         scales: {
           x: {
-            beginAtZero: true,
-            max: 100,
+            beginAtZero: true, max: 100,
             ticks: { display: false },
             grid: { display: false }
           },
-          y: {
-            grid: { display: false }
-          }
+          y: { grid: { display: false } }
         }
       }
     });
 
-    // 🔗 링크 복사
     function copyLink() {
       navigator.clipboard.writeText(window.location.href).then(() => {
         alert("공유 링크가 복사되었습니다!");
       });
     }
 
-    // 💬 카카오 공유
     function shareKakao() {
       Kakao.Share.sendDefault({
         objectType: 'feed',
