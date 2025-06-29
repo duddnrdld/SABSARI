@@ -2,9 +2,8 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="5; url={{ url_for('result') }}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>운세 보는 중...</title>
+  <title>운세를 불러오는 중...</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -20,22 +19,27 @@
       border-radius: 10px;
       box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
     }
-    .gif-wrapper {
+    .loading-text {
+      font-size: 1.5rem;
       margin-top: 1.5rem;
     }
     img {
       width: 80%;
-      max-width: 400px;
-      border-radius: 8px;
+      max-width: 300px;
+      margin-top: 2rem;
     }
   </style>
+  <script>
+    setTimeout(function() {
+      window.location.href = "{{ url_for('result') }}";
+    }, 5000);
+  </script>
 </head>
 <body>
   <div class="container">
-    <h2>{{ name }}가 오늘의 운세를 점치는 중...</h2>
-    <div class="gif-wrapper">
-      <img src="{{ url_for('static', filename='gif/fortune.gif') }}" alt="운세 점치는 중">
-    </div>
+    <h2>{{ name }}의 운세를 점치는 중이에요 🔮</h2>
+    <p class="loading-text">잠시만 기다려 주세요...</p>
+    <img src="{{ url_for('static', filename='fortune.gif') }}" alt="운세 불러오는 중">
   </div>
 </body>
 </html>

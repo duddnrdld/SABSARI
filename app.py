@@ -1,55 +1,18 @@
-from flask import Flask, render_template, request, redirect, url_for, make_response
-import sqlite3, uuid, os
+from flask import Flask, render_template, request, redirect, url_for, session
+import json, os, random
 
 app = Flask(__name__)
 app.secret_key = "sabsari-super-secret-key"
 
-DB_FILE = "data/users.db"
+DATA_FILE = "data/users.json"
 
-# DB 초기화
-def init_db():
-    if not os.path.exists("data"):
-        os.makedirs("data")
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id TEXT PRIMARY KEY,
-            name TEXT,
-            birth TEXT,
-            gender TEXT,
-            birth_time TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-init_db()
-
-# 사용자 조회
-def get_user(user_id):
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE id=?", (user_id,))
-    row = cursor.fetchone()
-    conn.close()
-    return row
-
-# 사용자 저장
-def save_user(user_id, name, birth, gender, birth_time):
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute("INSERT OR REPLACE INTO users (id, name, birth, gender, birth_time) VALUES (?, ?, ?, ?, ?)",
-                   (user_id, name, birth, gender, birth_time))
-    conn.commit()
-    conn.close()
+if not os.path.exists(DATA_FILE):
+    with open(DATA_FILE, "w") as f:
+        json.dump({}, f)
 
 @app.route("/", methods=["GET", "POST"])
 def name_input():
-    user_id = request.cookies.get("user_id")
-    user = get_user(user_id) if user_id else None
-
-    if user:
+    if session.get("named"):
         return redirect(url_for("greeting"))
 
     if request.method == "POST":
@@ -58,47 +21,68 @@ def name_input():
         gender = request.form["gender"]
         birth_time = request.form["birth_time"]
 
-        new_user_id = str(uuid.uuid4())
-        save_user(new_user_id, name, birth, gender, birth_time)
+        with open(DATA_FILE, "r") as f:
+            data = json.load(f)
+        data["user"] = {
+            "name": name,
+            "birth": birth,
+            "gender": gender,
+            "birth_time": birth_time
+        }
+        with open(DATA_FILE, "w") as f:
+            json.dump(data, f)
 
-        resp = make_response(redirect(url_for("greeting")))
-        resp.set_cookie("user_id", new_user_id, max_age=60*60*24*365)
-        return resp
+        session["named"] = True
+        session["name"] = name
+        return redirect(url_for("greeting"))
 
     return render_template("name_input.html")
 
-
 @app.route("/greeting")
 def greeting():
-    user_id = request.cookies.get("user_id")
-    user = get_user(user_id)
-    if not user:
-        return redirect(url_for("name_input"))
-
-    return render_template("greeting.html", name=user[1])
-
+    name = session.get("name", "삽사리")
+    return render_template("greeting.html", name=name)
 
 @app.route("/fortune")
 def fortune():
-    user_id = request.cookies.get("user_id")
-    user = get_user(user_id)
-    if not user:
-        return redirect(url_for("name_input"))
-
-    return render_template("fortune_loading.html", name=user[1])
-
+    name = session.get("name", "삽사리")
+    return render_template("fortune_loading.html", name=name)
 
 @app.route("/result")
 def result():
-    import random
-    score = random.randint(1, 100)
+    name = session.get("name", "삽사리")
 
-    user_id = request.cookies.get("user_id")
-    user = get_user(user_id)
-    name = user[1] if user else "사브사리"
+    love = random.randint(1, 100)
+    social = random.randint(1, 100)
+    money = random.randint(1, 100)
+    average = round((love + social + money) / 3)
 
-    return render_template("fortune_result.html", score=score, name=name)
+    def comment(score):
+        if score >= 80:
+            return "아주 좋은 날이에요!"
+        elif score >= 60:
+            return "기분 좋은 하루가 될 거예요."
+        elif score >= 40:
+            return "작은 주의가 필요해요."
+        else:
+            return "조심해야 할 하루예요."
 
+    comments = {
+        "love_comment": comment(love),
+        "social_comment": comment(social),
+        "money_comment": comment(money),
+        "total_comment": comment(average),
+    }
+
+    return render_template(
+        "fortune_result.html",
+        name=name,
+        love=love,
+        social=social,
+        money=money,
+        average=average,
+        **comments
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)

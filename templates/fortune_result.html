@@ -5,17 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>오늘의 운세 결과</title>
 
-  <!-- 🟡 Open Graph 메타태그 -->
+  <!-- Open Graph 메타태그 -->
   <meta property="og:title" content="사브사리 오늘의 운세 결과">
-  <meta property="og:description" content="{{ name }}의 오늘의 운세 점수는 {{ score }}점!">
+  <meta property="og:description" content="오늘의 운세 점수를 확인해보세요!">
   <meta property="og:image" content="{{ url_for('static', filename='og.png', _external=True) }}">
   <meta property="og:url" content="{{ request.url }}">
 
-  <!-- 🟡 Kakao SDK -->
+  <!-- Kakao SDK -->
   <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
   <script>
-    Kakao.init('1642da286406de685d9da6a719a1a8fb'); // 예: Kakao.init('1234abcd...');
+    Kakao.init('1642da286406de685d9da6a719a1a8fb'); // 실제 앱 키로 대체 필요
   </script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     body {
@@ -25,7 +28,7 @@
       padding: 2rem;
     }
     .container {
-      max-width: 500px;
+      max-width: 600px;
       margin: auto;
       background-color: white;
       padding: 2rem;
@@ -33,9 +36,9 @@
       box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
     }
     .score {
-      font-size: 4rem;
-      color: #ff7043;
-      margin: 2rem 0;
+      font-size: 1.2rem;
+      margin: 1rem 0;
+      text-align: left;
     }
     .footer {
       margin-top: 2rem;
@@ -67,9 +70,18 @@
 </head>
 <body>
   <div class="container">
-    <h2>✨ {{ name }}의 오늘의 운세 점수 ✨</h2>
-    <div class="score">{{ score }}점</div>
-    <p>행운이 가득하길 바랄게!</p>
+    <h2>{{ name }}의 오늘의 운세 ✨</h2>
+    <div class="score">
+      <ul>
+        <li>💘 연애운: {{ love }}점 – {{ love_comment }}</li>
+        <li>🤝 관계운: {{ social }}점 – {{ social_comment }}</li>
+        <li>💰 금전운: {{ money }}점 – {{ money_comment }}</li>
+        <li>🌟 총합 점수: {{ avg_score }}점 – {{ total_comment }}</li>
+      </ul>
+    </div>
+
+    <!-- 그래프 영역 -->
+    <canvas id="fortuneChart" width="400" height="300"></canvas>
 
     <div class="buttons">
       <form action="{{ url_for('fortune') }}">
@@ -80,10 +92,32 @@
       <div id="copy-msg">링크가 복사되었습니다!</div>
     </div>
 
-    <div class="footer">매일매일, {{ name }}와 함께하는 운세 시간 💫</div>
+    <div class="footer">오늘도 {{ name }}와 함께하는 사브사리 💫</div>
   </div>
 
   <script>
+    const ctx = document.getElementById('fortuneChart').getContext('2d');
+    const fortuneChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['연애운', '관계운', '금전운'],
+        datasets: [{
+          label: '운세 점수',
+          data: [{{ love }}, {{ social }}, {{ money }}],
+          backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56']
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+
     function copyLink() {
       navigator.clipboard.writeText(window.location.href)
         .then(() => {
@@ -99,7 +133,7 @@
         objectType: 'feed',
         content: {
           title: '{{ name }}의 오늘의 운세 결과',
-          description: '✨ 점수: {{ score }}점 ✨\n지금 사브사리 운세도 확인해보세요!',
+          description: '연애운: {{ love }}점, 관계운: {{ social }}점, 금전운: {{ money }}점!',
           imageUrl: "{{ url_for('static', filename='og.png', _external=True) }}",
           link: {
             mobileWebUrl: window.location.href,
