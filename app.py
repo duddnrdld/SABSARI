@@ -4,6 +4,15 @@ import json, os, random
 app = Flask(__name__)
 app.secret_key = "sabsari-super-secret-key"
 
+# ✅ 이걸 반드시 전역에 선언해야 함
+DATA_FILE = "data/users.json"
+
+# ✅ 이 코드는 딱 한 번만 실행되면 되니 if문 바로 아래에 둬
+if not os.path.exists(DATA_FILE):
+    os.makedirs("data", exist_ok=True)
+    with open(DATA_FILE, "w") as f:
+        json.dump({}, f)
+
 @app.route("/", methods=["GET", "POST"])
 def name_input():
     if session.get("named"):
