@@ -54,30 +54,36 @@ def fortune():
 
 @app.route("/result")
 def result():
-    name = session.get("name", "사용자")
-    love = random.randint(1, 100)
-    relation = random.randint(1, 100)
-    money = random.randint(1, 100)
-    total = round((love + relation + money) / 3)
+    import random
 
-    def comment(score):
+    love = random.randint(1, 100)
+    social = random.randint(1, 100)  # 관계운
+    money = random.randint(1, 100)
+
+    total = int((love + social + money) / 3)
+
+    # 1줄평 생성 함수
+    def get_comment(score):
         if score >= 85:
             return "아주 좋은 날이에요!"
         elif score >= 60:
             return "기분 좋은 하루가 될 거예요."
+        elif score >= 40:
+            return "무난한 하루가 예상돼요."
         else:
             return "조심해야 할 하루예요."
 
-    return render_template("fortune_result.html",
-        name=name,
-        love=love,
-        relation=relation,
-        money=money,
-        total=total,
-        love_msg=comment(love),
-        relation_msg=comment(relation),
-        money_msg=comment(money),
-        total_msg=comment(total)
+    return render_template(
+        "fortune_result.html",
+        name=session.get("name", "사브사리"),
+        love_score=love,
+        social_score=social,  # 이 줄 추가!
+        money_score=money,
+        total_score=total,
+        love_comment=get_comment(love),
+        social_comment=get_comment(social),
+        money_comment=get_comment(money),
+        total_comment=get_comment(total)
     )
 
 if __name__ == "__main__":

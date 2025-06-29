@@ -3,149 +3,150 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>사브사리 오늘의 운세</title>
+  <title>오늘의 운세 결과</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background-color: #fff;
+      background-color: #fffdf8;
       text-align: center;
       padding: 2rem;
     }
-
-    h2 {
-      margin-bottom: 2rem;
-    }
-
-    .section-box {
+    .result-box {
       background-color: #f9f9f9;
-      padding: 1.5rem;
-      border-radius: 10px;
+      padding: 1rem;
+      border-radius: 12px;
       margin-bottom: 1.5rem;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
-
-    .label {
+    .chart-title {
       font-weight: bold;
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.5rem;
     }
-
-    .bar-container {
-      display: flex;
-      align-items: center;
-      background-color: white;
+    .chart-container {
+      width: 90%;
+      height: 120px;
+      margin: 0 auto;
+      background: #fff;
       border-radius: 8px;
-      overflow: hidden;
-      height: 24px;
-      margin: 0.5rem 0;
+      padding: 1rem 0.5rem;
     }
-
-    .bar {
-      height: 100%;
-      text-align: left;
-    }
-
-    .love { background-color: #f48fb1; }
-    .social { background-color: #ffcc80; }
-    .money { background-color: #81d4fa; }
-    .total { background-color: #80cbc4; } /* 민트색 */
-
-    .score-text {
-      text-align: left;
-      margin-left: 0.5rem;
-      font-size: 0.95rem;
-      color: #333;
-    }
-
-    .summary {
-      font-size: 0.9rem;
-      color: #555;
+    .comment {
       margin-top: 0.5rem;
+      color: #555;
+      font-size: 0.95rem;
     }
-
     .buttons {
-      margin-top: 2rem;
+      margin-top: 1.5rem;
     }
-
-    .buttons button {
-      padding: 0.7rem 1.5rem;
+    button {
+      margin: 0.3rem;
+      padding: 0.6rem 1.2rem;
       font-size: 1rem;
+      background-color: #ffb74d;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      margin: 0.5rem;
     }
-
-    .again { background-color: #ffb74d; }
-    .copy { background-color: #ffd54f; }
-    .kakao { background-color: #ffe082; }
+    button:hover {
+      background-color: #ffa726;
+    }
   </style>
 </head>
 <body>
   <h2>✨ {{ name }}삽사리의 오늘의 운세 ✨</h2>
 
-  <!-- 연애운 -->
-  <div class="section-box">
-    <div class="label">🍈 연애운: {{ love }}/100점
+  <div class="result-box">
+    <div class="chart-title">💘 연애운</div>
+    <div class="chart-container">
+      <canvas id="loveChart"></canvas>
     </div>
-    <div class="bar-container">
-      <div class="bar love" style="width: {{ love }}%"></div>
-    </div>
-    <div class="summary">{{ love_summary }}</div>
+    <div class="comment">{{ love_score }}/100점 - {{ love_comment }}</div>
   </div>
 
-  <!-- 관계운 -->
-  <div class="section-box">
-    <div class="label">🫂 관계운: {{ social }}/100점</div>
-    <div class="bar-container">
-      <div class="bar social" style="width: {{ social }}%"></div>
+  <div class="result-box">
+    <div class="chart-title">🧑‍🤝‍🧑 관계운</div>
+    <div class="chart-container">
+      <canvas id="socialChart"></canvas>
     </div>
-    <div class="summary">{{ social_summary }}</div>
+    <div class="comment">{{ social_score }}/100점 - {{ social_comment }}</div>
   </div>
 
-  <!-- 금전운 -->
-  <div class="section-box">
-    <div class="label">💰 금전운: {{ money }}/100점</div>
-    <div class="bar-container">
-      <div class="bar money" style="width: {{ money }}%"></div>
+  <div class="result-box">
+    <div class="chart-title">💰 금전운</div>
+    <div class="chart-container">
+      <canvas id="moneyChart"></canvas>
     </div>
-    <div class="summary">{{ money_summary }}</div>
+    <div class="comment">{{ money_score }}/100점 - {{ money_comment }}</div>
   </div>
 
-  <!-- 총운 -->
-  <div class="section-box">
-    <div class="label">🌟 총운: {{ total }}/100점</div>
-    <div class="bar-container">
-      <div class="bar total" style="width: {{ total }}%"></div>
+  <div class="result-box">
+    <div class="chart-title">🌟 총운</div>
+    <div class="chart-container">
+      <canvas id="totalChart"></canvas>
     </div>
-    <div class="summary">{{ total_summary }}</div>
+    <div class="comment">{{ total_score }}/100점 - {{ total_comment }}</div>
   </div>
 
-  <!-- 버튼 -->
   <div class="buttons">
-    <form action="{{ url_for('greeting') }}">
-      <button type="submit" class="again">🔄 다시 보기</button>
+    <form action="{{ url_for('fortune') }}">
+      <button type="submit">🔄 다시 보기</button>
     </form>
-    <button onclick="copyLink()" class="copy">📍 공유 링크 복사</button>
-    <button onclick="shareKakao()" class="kakao">📣 카카오톡 공유</button>
+    <button onclick="copyLink()">🔗 공유 링크 복사</button>
+    <button onclick="shareKakao()">💬 카카오톡 공유</button>
   </div>
 
-  <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
   <script>
-    Kakao.init('카카오_자바스크립트_키');
+    const renderHorizontalChart = (ctxId, value, color) => {
+      new Chart(document.getElementById(ctxId), {
+        type: 'bar',
+        data: {
+          labels: [''],
+          datasets: [{
+            data: [value],
+            backgroundColor: color,
+            borderRadius: 8,
+            barThickness: 30,
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          scales: {
+            x: {
+              min: 0,
+              max: 100,
+              grid: { display: false },
+              ticks: { display: false }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { display: false }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false }
+          }
+        }
+      });
+    };
+
+    renderHorizontalChart('loveChart', {{ love_score }}, '#f48fb1');
+    renderHorizontalChart('socialChart', {{ social_score }}, '#ffd54f');
+    renderHorizontalChart('moneyChart', {{ money_score }}, '#aed581');
+    renderHorizontalChart('totalChart', {{ total_score }}, '#80deea');
 
     function copyLink() {
       navigator.clipboard.writeText(window.location.href)
-        .then(() => alert("링크가 복사되었습니다!"));
+        .then(() => alert('링크가 복사되었습니다!'));
     }
 
     function shareKakao() {
       Kakao.Share.sendDefault({
         objectType: 'feed',
         content: {
-          title: '{{ name }}삽사리의 운세',
-          description: '총운 {{ total }}/100점! 지금 확인해보세요.',
+          title: '{{ name }}의 오늘의 운세 결과',
+          description: '오늘의 총운: {{ total_score }}/100점! 지금 확인해보세요.',
           imageUrl: '{{ url_for("static", filename="og.png", _external=True) }}',
           link: {
             mobileWebUrl: window.location.href,
@@ -164,5 +165,7 @@
       });
     }
   </script>
+  <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+  <script>Kakao.init('YOUR_KAKAO_JAVASCRIPT_KEY');</script>
 </body>
 </html>
