@@ -49,8 +49,13 @@ def greeting():
 
     with open(DATA_FILE, "r") as f:
         data = json.load(f)
-    name = data[user_id]["name"]
 
+    # 🔒 user_id가 JSON에 없을 경우 처리
+    if user_id not in data:
+        session.clear()
+        return redirect(url_for("name_input"))
+
+    name = data[user_id]["name"]
     return render_template("greeting.html", name=name)
 
 @app.route("/fortune")
