@@ -80,7 +80,7 @@
         <li>💘 연애운: {{ love }}점 – {{ love_comment }}</li>
         <li>🤝 관계운: {{ social }}점 – {{ social_comment }}</li>
         <li>💰 금전운: {{ money }}점 – {{ money_comment }}</li>
-        <li>🌟 총합 점수: {{ average }}점 – {{ total_comment }}</li>
+        <li>🌟 총운: {{ average }}점 – {{ total_comment }}</li>
       </ul>
     </div>
 
@@ -104,11 +104,11 @@
     const fortuneChart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['연애운', '관계운', '금전운'],
+        labels: ['연애운', '관계운', '금전운', '총운'],
         datasets: [{
           label: '운세 점수',
-          data: [{{ love }}, {{ social }}, {{ money }}],
-          backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56'],
+          data: [{{ love }}, {{ social }}, {{ money }}, {{ average }}],
+          backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56', '#81c784'],
           borderRadius: 10,
           barThickness: 30
         }]
@@ -118,6 +118,13 @@
         plugins: {
           legend: {
             display: false
+          },
+          tooltip: {
+            enabled: true
+          },
+          datalabels: {
+            anchor: 'end',
+            align: 'end'
           }
         },
         scales: {
@@ -125,11 +132,41 @@
             beginAtZero: true,
             max: 100,
             ticks: {
-              stepSize: 20
+              display: false
+            },
+            grid: {
+              display: false
+            }
+          },
+          x: {
+            grid: {
+              display: false
             }
           }
         }
-      }
+      },
+      plugins: [
+        {
+          id: 'topLabels',
+          afterDatasetsDraw(chart) {
+            const {
+              ctx,
+              data,
+              chartArea: { top },
+              scales: { x, y }
+            } = chart;
+            ctx.save();
+            data.datasets[0].data.forEach((value, index) => {
+              const xCenter = x.getPixelForValue(index);
+              const yPos = y.getPixelForValue(value) - 10;
+              ctx.fillStyle = '#000';
+              ctx.font = 'bold 14px Arial';
+              ctx.textAlign = 'center';
+              ctx.fillText(value + '점', xCenter, yPos);
+            });
+          }
+        }
+      ]
     });
 
     function copyLink() {
@@ -147,7 +184,7 @@
         objectType: 'feed',
         content: {
           title: '{{ name }}의 오늘의 운세 결과',
-          description: '연애운: {{ love }}점, 관계운: {{ social }}점, 금전운: {{ money }}점!',
+          description: '연애운: {{ love }}점, 관계운: {{ social }}점, 금전운: {{ money }}점, 총운: {{ average }}점',
           imageUrl: "{{ url_for('static', filename='og.png', _external=True) }}",
           link: {
             mobileWebUrl: window.location.href,
