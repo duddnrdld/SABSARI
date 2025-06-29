@@ -1,54 +1,64 @@
-<!-- fortune_result.html (최신 반영 버전) -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ name }}의 오늘의 운세</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>사브사리 운세 결과</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background-color: #fff8e1;
-      margin: 0;
-      padding: 2rem;
+      background-color: #fff3e0;
       text-align: center;
+      padding: 2rem;
     }
     .container {
       max-width: 700px;
       margin: auto;
-      background: #ffffff;
+      background-color: white;
       padding: 2rem;
       border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
     }
-    .box {
-      border: 2px solid #333;
-      border-radius: 10px;
+
+    .title {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .graph-box-group {
+      border: 3px solid black;
       padding: 1rem;
       margin-bottom: 2rem;
-      background-color: #fff;
+      border-radius: 12px;
     }
-    .total-box {
-      border: 2px solid #00897b;
-      border-radius: 10px;
-      padding: 1rem;
-      background-color: #fff;
+
+    .graph-box {
+      margin-bottom: 2rem;
     }
-    .label {
-      font-size: 1.4rem;
-      margin-bottom: 0.5rem;
-      font-weight: bold;
+
+    canvas {
+      height: 120px !important;
     }
+
     .comment {
-      font-size: 1rem;
+      font-size: 0.95rem;
       margin-top: 0.5rem;
-      color: #333;
+      color: #444;
     }
+
+    .total-box {
+      border: 3px solid black;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      border-radius: 12px;
+    }
+
     .buttons {
       margin-top: 2rem;
     }
-    .buttons button {
+
+    button {
       margin: 0.5rem;
       padding: 0.8rem 1.5rem;
       font-size: 1rem;
@@ -57,63 +67,71 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    .buttons button:hover {
+
+    button:hover {
       background-color: #ffa726;
     }
-    canvas {
-      max-width: 100%;
-      height: 120px !important;
+
+    #copy-msg {
+      margin-top: 1rem;
+      color: green;
+      font-size: 0.9rem;
+      display: none;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>{{ name }}의 오늘의 운세 ✨</h2>
+    <div class="title">{{ name }}의 오늘의 운세 결과</div>
 
-    <div class="box">
-      <div class="label">💖 연애운</div>
-      <canvas id="loveChart"></canvas>
-      <div class="comment">{{ love_comment }}</div>
+    <!-- 🎯 연애운/관계운/금전운 묶음 -->
+    <div class="graph-box-group">
+      <div class="graph-box">
+        <div>❤️ 연애운: {{ love_score }}점 / 100점</div>
+        <canvas id="loveChart"></canvas>
+        <div class="comment">{{ love_comment }}</div>
+      </div>
+
+      <div class="graph-box">
+        <div>🤝 관계운: {{ relation_score }}점 / 100점</div>
+        <canvas id="relationChart"></canvas>
+        <div class="comment">{{ relation_comment }}</div>
+      </div>
+
+      <div class="graph-box">
+        <div>💰 금전운: {{ money_score }}점 / 100점</div>
+        <canvas id="moneyChart"></canvas>
+        <div class="comment">{{ money_comment }}</div>
+      </div>
     </div>
 
-    <div class="box">
-      <div class="label">🤝 관계운</div>
-      <canvas id="relationChart"></canvas>
-      <div class="comment">{{ relation_comment }}</div>
-    </div>
-
-    <div class="box">
-      <div class="label">💰 금전운</div>
-      <canvas id="moneyChart"></canvas>
-      <div class="comment">{{ money_comment }}</div>
-    </div>
-
+    <!-- 🌟 총운 -->
     <div class="total-box">
-      <div class="label">🌟 총운</div>
+      <div>🌈 총운: {{ total_score }}점 / 100점</div>
       <canvas id="totalChart"></canvas>
       <div class="comment">{{ total_comment }}</div>
     </div>
 
+    <!-- 📤 공유 버튼 -->
     <div class="buttons">
-      <form action="{{ url_for('fortune') }}">
+      <form action="{{ url_for('greeting') }}">
         <button type="submit">🔄 다시 보기</button>
       </form>
       <button onclick="copyLink()">🔗 공유 링크 복사</button>
+      <div id="copy-msg">링크가 복사되었습니다!</div>
     </div>
-    <div id="copy-msg" style="display:none; color: green;">링크가 복사되었습니다!</div>
   </div>
 
   <script>
-    function createChart(id, score, color) {
+    const makeChart = (id, label, score, color) => {
       new Chart(document.getElementById(id), {
-        type: 'bar',
+        type: "bar",
         data: {
-          labels: [''],
+          labels: [label],
           datasets: [{
-            label: '',
             data: [score],
             backgroundColor: color,
-            barThickness: 30,
+            barThickness: 50,
             borderRadius: 8,
           }]
         },
@@ -122,34 +140,33 @@
           responsive: true,
           scales: {
             x: {
+              beginAtZero: true,
               max: 100,
-              grid: { display: false },
-              ticks: { display: false }
+              ticks: { display: false },
+              grid: { display: false }
             },
             y: {
-              grid: { display: false },
-              ticks: { display: false }
+              ticks: { display: false },
+              grid: { display: false }
             }
           },
           plugins: {
             legend: { display: false },
             tooltip: {
               callbacks: {
-                label: function(context) {
-                  return context.raw + '점 / 100점';
-                }
+                label: (context) => `${context.raw}점`
               }
-            },
-            datalabels: false
+            }
           }
         }
       });
     }
 
-    createChart('loveChart', {{ love_score }}, '#f06292');
-    createChart('relationChart', {{ relation_score }}, '#64b5f6');
-    createChart('moneyChart', {{ money_score }}, '#81c784');
-    createChart('totalChart', {{ total_score }}, '#4dd0e1');
+    // 📊 그래프 생성
+    makeChart("loveChart", "연애운", {{ love_score }}, "#f06292");
+    makeChart("relationChart", "관계운", {{ relation_score }}, "#4fc3f7");
+    makeChart("moneyChart", "금전운", {{ money_score }}, "#81c784");
+    makeChart("totalChart", "총운", {{ total_score }}, "#64d8cb");
 
     function copyLink() {
       navigator.clipboard.writeText(window.location.href)

@@ -1,13 +1,14 @@
+```python
 from flask import Flask, render_template, request, redirect, url_for, session
 import json, os, random
 
 app = Flask(__name__)
 app.secret_key = "sabsari-super-secret-key"
 
-# ✅ 이걸 반드시 전역에 선언해야 함
 DATA_FILE = "data/users.json"
+COMMENTS_FILE = "data/fortune_comments.json"
 
-# ✅ 이 코드는 딱 한 번만 실행되면 되니 if문 바로 아래에 둬
+# Ensure data file exists
 if not os.path.exists(DATA_FILE):
     os.makedirs("data", exist_ok=True)
     with open(DATA_FILE, "w") as f:
@@ -53,7 +54,6 @@ def greeting():
     with open(DATA_FILE, "r") as f:
         data = json.load(f)
 
-    # 🔒 user_id가 JSON에 없을 경우 처리
     if user_id not in data:
         session.clear()
         return redirect(url_for("name_input"))
@@ -75,16 +75,12 @@ def fortune():
 
 @app.route("/result")
 def result():
-    import random
-
-    # 점수 생성
     love_score = random.randint(1, 100)
     relation_score = random.randint(1, 100)
     money_score = random.randint(1, 100)
     total_score = round((love_score + relation_score + money_score) / 3)
 
-    # 한줄평 로드
-    with open("data/fortune_comments.json", "r") as f:
+    with open(COMMENTS_FILE, "r") as f:
         comments_data = json.load(f)
 
     def get_comment(score, category):
@@ -104,7 +100,6 @@ def result():
     money_comment = get_comment(money_score, "money")
     total_comment = get_comment(total_score, "total")
 
-    # 이름 불러오기
     user_id = session.get("user_id")
     name = ""
     if user_id:
@@ -127,3 +122,4 @@ def result():
 
 if __name__ == "__main__":
     app.run(debug=True)
+```
