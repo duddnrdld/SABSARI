@@ -1,3 +1,4 @@
+<!-- name_input.html (1번화면) -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -7,43 +8,69 @@
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background-color: #fff8e1;
-      text-align: center;
+      background-color: #fff3e0;
       padding: 2rem;
+      text-align: center;
     }
-    .container {
+    .form-container {
       max-width: 500px;
       margin: auto;
       background-color: white;
       padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
     }
-    input, select, button {
-      margin-top: 1rem;
-      padding: 0.5rem;
+    input, select {
+      display: block;
       width: 90%;
+      margin: 1rem auto;
+      padding: 0.8rem;
       font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      padding: 0.9rem 2rem;
+      font-size: 1.1rem;
+      background-color: #ffcc80;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #ffb74d;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>만나서 반가워!<br>내 이름을 지어줘</h2>
-
+  <div class="form-container">
+    <h2>만나서 반가워!<br>내 이름을 지어줘 💫</h2>
     <form method="POST">
-      <input type="text" name="name" placeholder="사브사리 이름을 입력해줘 (예: 복토리)" required><br>
-
-      <h4>개인정보 입력</h4>
-      <input type="date" name="birth" required><br>
+      <input type="text" name="name" placeholder="삽사리 이름" required>
+      <input type="date" name="birth" required>
 
       <select name="gender" required>
-        <option value="" disabled selected>성별을 선택해줘</option>
-        <option value="male">남자</option>
-        <option value="female">여자</option>
-      </select><br>
+        <option value="">성별 선택</option>
+        <option value="남성">남성</option>
+        <option value="여성">여성</option>
+        <option value="기타">기타</option>
+      </select>
 
-      <input type="text" name="birth_time" placeholder="태어난 시간 (예: 오전 3시)" required><br>
+      <select name="birth_time" required>
+        <option value="">태어난 시간을 선택하세요</option>
+        <option value="자시 (23:00~01:00)">자시 (23:00~01:00)</option>
+        <option value="축시 (01:00~03:00)">축시 (01:00~03:00)</option>
+        <option value="인시 (03:00~05:00)">인시 (03:00~05:00)</option>
+        <option value="묘시 (05:00~07:00)">묘시 (05:00~07:00)</option>
+        <option value="진시 (07:00~09:00)">진시 (07:00~09:00)</option>
+        <option value="사시 (09:00~11:00)">사시 (09:00~11:00)</option>
+        <option value="오시 (11:00~13:00)">오시 (11:00~13:00)</option>
+        <option value="미시 (13:00~15:00)">미시 (13:00~15:00)</option>
+        <option value="신시 (15:00~17:00)">신시 (15:00~17:00)</option>
+        <option value="유시 (17:00~19:00)">유시 (17:00~19:00)</option>
+        <option value="술시 (19:00~21:00)">술시 (19:00~21:00)</option>
+        <option value="해시 (21:00~23:00)">해시 (21:00~23:00)</option>
+      </select>
 
       <button type="submit">입력 완료</button>
     </form>
