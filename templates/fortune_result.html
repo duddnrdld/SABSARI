@@ -35,9 +35,12 @@
       border-radius: 10px;
       box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
     }
-    .score {
-      font-size: 1.1rem;
+    .box {
+      background-color: #fefae0;
+      padding: 1rem;
       margin: 1rem 0;
+      border-radius: 10px;
+      box-shadow: 1px 1px 6px rgba(0,0,0,0.05);
       text-align: left;
     }
     .footer {
@@ -75,17 +78,23 @@
 <body>
   <div class="container">
     <h2>{{ name }}의 오늘의 운세 ✨</h2>
-    <div class="score">
+
+    <div class="box">
       <ul>
         <li>💘 연애운: {{ love }}점 – {{ love_comment }}</li>
         <li>🤝 관계운: {{ social }}점 – {{ social_comment }}</li>
         <li>💰 금전운: {{ money }}점 – {{ money_comment }}</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <ul>
         <li>🌟 총운: {{ average }}점 – {{ total_comment }}</li>
       </ul>
     </div>
 
     <!-- 그래프 영역 -->
-    <canvas id="fortuneChart" height="250"></canvas>
+    <canvas id="fortuneChart" height="180"></canvas>
 
     <div class="buttons">
       <form action="{{ url_for('fortune') }}">
@@ -158,7 +167,7 @@
             ctx.save();
             data.datasets[0].data.forEach((value, index) => {
               const xCenter = x.getPixelForValue(index);
-              const yPos = y.getPixelForValue(value) - 10;
+              const yPos = y.getPixelForValue(value) - 15;
               ctx.fillStyle = '#000';
               ctx.font = 'bold 14px Arial';
               ctx.textAlign = 'center';
