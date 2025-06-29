@@ -36,7 +36,7 @@
       background-color: #ffca28;
     }
     .gif {
-      margin-top: 2rem;
+      margin: 1.5rem auto;
     }
     .gif img {
       width: 80%;
@@ -50,12 +50,12 @@
     <div class="greeting">
       {{ name }}삽사리야, 오늘의 운세를 보고 싶어?
     </div>
-    <form action="{{ url_for('fortune') }}">
-      <button type="submit">오늘의 운세 보기</button>
-    </form>
     <div class="gif">
       <img src="{{ url_for('static', filename='gif/welcome.gif') }}" alt="삽사리 환영">
     </div>
+    <form action="{{ url_for('fortune') }}">
+      <button type="submit">오늘의 운세 보기</button>
+    </form>
   </div>
 </body>
 </html>
