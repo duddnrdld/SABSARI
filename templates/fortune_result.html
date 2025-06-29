@@ -43,6 +43,13 @@
       box-shadow: 1px 1px 6px rgba(0,0,0,0.05);
       text-align: left;
     }
+    .chart-box {
+      background-color: #f3f3f3;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 10px;
+      box-shadow: 1px 1px 6px rgba(0,0,0,0.05);
+    }
     .footer {
       margin-top: 2rem;
       font-size: 1rem;
@@ -81,23 +88,25 @@
 
     <div class="box">
       <ul>
-        <li>💘 연애운: {{ love }}점 – {{ love_comment }}</li>
-        <li>🤝 관계운: {{ social }}점 – {{ social_comment }}</li>
-        <li>💰 금전운: {{ money }}점 – {{ money_comment }}</li>
+        <li>💘 연애운: {{ love }}점/100점 – {{ love_comment }}</li>
+        <li>🤝 관계운: {{ social }}점/100점 – {{ social_comment }}</li>
+        <li>💰 금전운: {{ money }}점/100점 – {{ money_comment }}</li>
       </ul>
     </div>
 
-    <!-- 연애/관계/금전운 가로 막대 그래프 -->
-    <canvas id="mainChart" height="200"></canvas>
+    <div class="chart-box">
+      <canvas id="mainChart" height="200"></canvas>
+    </div>
 
     <div class="box">
       <ul>
-        <li>🌟 총운: {{ average }}점 – {{ total_comment }}</li>
+        <li>🌟 총운: {{ average }}점/100점 – {{ total_comment }}</li>
       </ul>
     </div>
 
-    <!-- 총운 가로 막대 그래프 -->
-    <canvas id="totalChart" height="100"></canvas>
+    <div class="chart-box">
+      <canvas id="totalChart" height="100"></canvas>
+    </div>
 
     <div class="buttons">
       <form action="{{ url_for('fortune') }}">
@@ -130,6 +139,11 @@
         plugins: {
           legend: { display: false },
           tooltip: { enabled: true },
+          datalabels: {
+            anchor: 'end',
+            align: 'end',
+            formatter: (value) => `${value}점/100점`
+          }
         },
         scales: {
           x: {
@@ -141,7 +155,8 @@
             grid: { display: false }
           }
         }
-      }
+      },
+      plugins: [ChartDataLabels]
     });
 
     const totalCtx = document.getElementById('totalChart').getContext('2d');
@@ -162,6 +177,11 @@
         plugins: {
           legend: { display: false },
           tooltip: { enabled: true },
+          datalabels: {
+            anchor: 'end',
+            align: 'end',
+            formatter: (value) => `${value}점/100점`
+          }
         },
         scales: {
           x: {
@@ -173,7 +193,8 @@
             grid: { display: false }
           }
         }
-      }
+      },
+      plugins: [ChartDataLabels]
     });
 
     function copyLink() {
@@ -210,5 +231,7 @@
       });
     }
   </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 </body>
 </html>
