@@ -70,7 +70,7 @@
       display: none;
     }
     canvas {
-      max-width: 350px;
+      max-width: 400px;
       margin: 1rem auto;
     }
   </style>
@@ -87,14 +87,17 @@
       </ul>
     </div>
 
+    <!-- 연애/관계/금전운 가로 막대 그래프 -->
+    <canvas id="mainChart" height="200"></canvas>
+
     <div class="box">
       <ul>
         <li>🌟 총운: {{ average }}점 – {{ total_comment }}</li>
       </ul>
     </div>
 
-    <!-- 그래프 영역 -->
-    <canvas id="fortuneChart" height="180"></canvas>
+    <!-- 총운 가로 막대 그래프 -->
+    <canvas id="totalChart" height="100"></canvas>
 
     <div class="buttons">
       <form action="{{ url_for('fortune') }}">
@@ -109,73 +112,68 @@
   </div>
 
   <script>
-    const ctx = document.getElementById('fortuneChart').getContext('2d');
-    const fortuneChart = new Chart(ctx, {
+    const mainCtx = document.getElementById('mainChart').getContext('2d');
+    new Chart(mainCtx, {
       type: 'bar',
       data: {
-        labels: ['연애운', '관계운', '금전운', '총운'],
+        labels: ['연애운', '관계운', '금전운'],
         datasets: [{
-          label: '운세 점수',
-          data: [{{ love }}, {{ social }}, {{ money }}, {{ average }}],
-          backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56', '#81c784'],
+          data: [{{ love }}, {{ social }}, {{ money }}],
+          backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56'],
           borderRadius: 10,
           barThickness: 30
         }]
       },
       options: {
+        indexAxis: 'y',
         responsive: true,
         plugins: {
-          legend: {
-            display: false
-          },
-          tooltip: {
-            enabled: true
-          },
-          datalabels: {
-            anchor: 'end',
-            align: 'end'
-          }
+          legend: { display: false },
+          tooltip: { enabled: true },
         },
         scales: {
-          y: {
-            beginAtZero: true,
-            max: 100,
-            ticks: {
-              display: false
-            },
-            grid: {
-              display: false
-            }
-          },
           x: {
-            grid: {
-              display: false
-            }
+            max: 100,
+            ticks: { display: false },
+            grid: { display: false }
+          },
+          y: {
+            grid: { display: false }
           }
         }
+      }
+    });
+
+    const totalCtx = document.getElementById('totalChart').getContext('2d');
+    new Chart(totalCtx, {
+      type: 'bar',
+      data: {
+        labels: ['총운'],
+        datasets: [{
+          data: [{{ average }}],
+          backgroundColor: ['#81c784'],
+          borderRadius: 10,
+          barThickness: 30
+        }]
       },
-      plugins: [
-        {
-          id: 'topLabels',
-          afterDatasetsDraw(chart) {
-            const {
-              ctx,
-              data,
-              chartArea: { top },
-              scales: { x, y }
-            } = chart;
-            ctx.save();
-            data.datasets[0].data.forEach((value, index) => {
-              const xCenter = x.getPixelForValue(index);
-              const yPos = y.getPixelForValue(value) - 15;
-              ctx.fillStyle = '#000';
-              ctx.font = 'bold 14px Arial';
-              ctx.textAlign = 'center';
-              ctx.fillText(value + '점', xCenter, yPos);
-            });
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true },
+        },
+        scales: {
+          x: {
+            max: 100,
+            ticks: { display: false },
+            grid: { display: false }
+          },
+          y: {
+            grid: { display: false }
           }
         }
-      ]
+      }
     });
 
     function copyLink() {
