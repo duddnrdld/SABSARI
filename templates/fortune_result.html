@@ -1,152 +1,143 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>오늘의 운세 결과</title>
-
-  <!-- Open Graph 메타태그 -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>사브사리 오늘의 운세 ✨</title>
   <meta property="og:title" content="사브사리 오늘의 운세 결과">
-  <meta property="og:description" content="오늘의 운세 점수를 확인해보세요!">
+  <meta property="og:description" content="당신의 오늘의 운세를 확인하세요!">
   <meta property="og:image" content="{{ url_for('static', filename='og.png', _external=True) }}">
   <meta property="og:url" content="{{ request.url }}">
 
-  <!-- Kakao SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
   <script>
-    Kakao.init('YOUR_KAKAO_JS_KEY');
+    Kakao.init('YOUR_KAKAO_JS_KEY');  // 여기에 본인 키 입력
   </script>
-
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background-color: #fff3e0;
+      background-color: #fffdf8;
+      padding: 2rem;
       text-align: center;
-      padding: 2rem;
+      color: #333;
     }
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background-color: white;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+
+    h2 {
+      margin-bottom: 2rem;
     }
-    .box {
-      background-color: #fefae0;
+
+    .section-box {
+      background: #fff9e6;
+      border-radius: 12px;
       padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 10px;
-      box-shadow: 1px 1px 6px rgba(0,0,0,0.05);
+      margin: 1.5rem auto;
+      max-width: 500px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       text-align: left;
     }
-    .chart-box {
-      background-color: #f3f3f3;
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 10px;
-      box-shadow: 1px 1px 6px rgba(0,0,0,0.05);
+
+    canvas {
+      margin-top: 1rem;
+      max-width: 100%;
     }
-    .footer {
-      margin-top: 2rem;
-      font-size: 1rem;
-      color: #777;
-    }
+
     .buttons {
-      margin-top: 2rem;
+      margin: 2rem auto;
     }
+
     button {
       margin: 0.5rem;
-      padding: 0.8rem 1.5rem;
+      padding: 0.7rem 1.5rem;
       font-size: 1rem;
-      background-color: #ffb74d;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #ffa726;
+
+    #replay {
+      background-color: #ffcc80;
     }
-    #copy-msg {
-      margin-top: 1rem;
-      color: green;
+
+    #copy-link {
+      background-color: #ffe082;
+    }
+
+    #kakao-share {
+      background-color: #ffd54f;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      color: #999;
       font-size: 0.9rem;
-      display: none;
-    }
-    canvas {
-      max-width: 400px;
-      margin: 1rem auto;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>{{ name }}의 오늘의 운세 ✨</h2>
+  <h2>삽사리의 오늘의 운세 ✨</h2>
 
-    <div class="box">
-      <ul>
-        <li>💘 연애운: {{ love }}점/100점 – {{ love_comment }}</li>
-        <li>🤝 관계운: {{ social }}점/100점 – {{ social_comment }}</li>
-        <li>💰 금전운: {{ money }}점/100점 – {{ money_comment }}</li>
-      </ul>
-    </div>
-
-    <div class="chart-box">
-      <canvas id="mainChart" height="200"></canvas>
-    </div>
-
-    <div class="box">
-      <ul>
-        <li>🌟 총운: {{ average }}점/100점 – {{ total_comment }}</li>
-      </ul>
-    </div>
-
-    <div class="chart-box">
-      <canvas id="totalChart" height="100"></canvas>
-    </div>
-
-    <div class="buttons">
-      <form action="{{ url_for('fortune') }}">
-        <button type="submit">🔄 다시 보기</button>
-      </form>
-      <button onclick="copyLink()">🔗 공유 링크 복사</button>
-      <button onclick="shareKakao()">💬 카카오톡 공유</button>
-      <div id="copy-msg">링크가 복사되었습니다!</div>
-    </div>
-
-    <div class="footer">오늘도 {{ name }}와 함께하는 사브사리 💫</div>
+  <!-- 🌸 연애/관계/금전운 -->
+  <div class="section-box">
+    <ul>
+      <li>💘 연애운: {{ love }}/100점 – {{ love_msg }}</li>
+      <li>🧡 관계운: {{ relation }}/100점 – {{ relation_msg }}</li>
+      <li>💰 금전운: {{ money }}/100점 – {{ money_msg }}</li>
+    </ul>
+    <canvas id="categoryChart"></canvas>
   </div>
 
+  <!-- ☀️ 총운 -->
+  <div class="section-box">
+    <ul>
+      <li>🌟 총운: {{ total }}/100점 – {{ total_msg }}</li>
+    </ul>
+    <canvas id="totalChart"></canvas>
+  </div>
+
+  <!-- 🔄 버튼 -->
+  <div class="buttons">
+    <form action="{{ url_for('greeting') }}">
+      <button id="replay" type="submit">🔄 다시 보기</button>
+    </form>
+    <button id="copy-link" onclick="copyLink()">🔗 공유 링크 복사</button>
+    <button id="kakao-share" onclick="shareKakao()">💬 카카오톡 공유</button>
+  </div>
+
+  <div class="footer">오늘도 삽사리와 함께하는 사브사리 🐶</div>
+
   <script>
-    const mainCtx = document.getElementById('mainChart').getContext('2d');
-    new Chart(mainCtx, {
+    // 📊 카테고리별 운세 그래프
+    new Chart(document.getElementById("categoryChart"), {
       type: 'bar',
       data: {
         labels: ['연애운', '관계운', '금전운'],
         datasets: [{
-          data: [{{ love }}, {{ social }}, {{ money }}],
-          backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56'],
+          label: '',
+          data: [{{ love }}, {{ relation }}, {{ money }}],
+          backgroundColor: ['#ff8a65', '#fbc02d', '#81c784'],
           borderRadius: 10,
-          barThickness: 30
         }]
       },
       options: {
         indexAxis: 'y',
-        responsive: true,
         plugins: {
           legend: { display: false },
-          tooltip: { enabled: true },
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.raw}점 / 100점`
+            }
+          },
           datalabels: {
             anchor: 'end',
-            align: 'end',
-            formatter: (value) => `${value}점/100점`
+            align: 'right',
+            formatter: v => `${v}점 / 100점`
           }
         },
         scales: {
           x: {
+            beginAtZero: true,
             max: 100,
             ticks: { display: false },
             grid: { display: false }
@@ -155,36 +146,33 @@
             grid: { display: false }
           }
         }
-      },
-      plugins: [ChartDataLabels]
+      }
     });
 
-    const totalCtx = document.getElementById('totalChart').getContext('2d');
-    new Chart(totalCtx, {
+    // ☀️ 총운 그래프
+    new Chart(document.getElementById("totalChart"), {
       type: 'bar',
       data: {
         labels: ['총운'],
         datasets: [{
-          data: [{{ average }}],
-          backgroundColor: ['#81c784'],
+          data: [{{ total }}],
+          backgroundColor: '#ffd54f',
           borderRadius: 10,
-          barThickness: 30
         }]
       },
       options: {
         indexAxis: 'y',
-        responsive: true,
         plugins: {
           legend: { display: false },
-          tooltip: { enabled: true },
-          datalabels: {
-            anchor: 'end',
-            align: 'end',
-            formatter: (value) => `${value}점/100점`
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.raw}점 / 100점`
+            }
           }
         },
         scales: {
           x: {
+            beginAtZero: true,
             max: 100,
             ticks: { display: false },
             grid: { display: false }
@@ -193,45 +181,31 @@
             grid: { display: false }
           }
         }
-      },
-      plugins: [ChartDataLabels]
+      }
     });
 
+    // 🔗 링크 복사
     function copyLink() {
-      navigator.clipboard.writeText(window.location.href)
-        .then(() => {
-          document.getElementById("copy-msg").style.display = "block";
-          setTimeout(() => {
-            document.getElementById("copy-msg").style.display = "none";
-          }, 2000);
-        });
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert("공유 링크가 복사되었습니다!");
+      });
     }
 
+    // 💬 카카오 공유
     function shareKakao() {
       Kakao.Share.sendDefault({
         objectType: 'feed',
         content: {
-          title: '{{ name }}의 오늘의 운세 결과',
-          description: '연애운: {{ love }}점, 관계운: {{ social }}점, 금전운: {{ money }}점, 총운: {{ average }}점',
+          title: '오늘의 사브사리 운세',
+          description: `총운: {{ total }}/100점`,
           imageUrl: "{{ url_for('static', filename='og.png', _external=True) }}",
           link: {
             mobileWebUrl: window.location.href,
             webUrl: window.location.href
           }
-        },
-        buttons: [
-          {
-            title: '운세 보러 가기',
-            link: {
-              mobileWebUrl: window.location.href,
-              webUrl: window.location.href
-            }
-          }
-        ]
+        }
       });
     }
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 </body>
 </html>
