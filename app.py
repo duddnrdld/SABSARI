@@ -4,12 +4,6 @@ import json, os, random
 app = Flask(__name__)
 app.secret_key = "sabsari-super-secret-key"
 
-DATA_FILE = "data/users.json"
-if not os.path.exists(DATA_FILE):
-    os.makedirs("data", exist_ok=True)
-    with open(DATA_FILE, "w") as f:
-        json.dump({}, f)
-
 @app.route("/", methods=["GET", "POST"])
 def name_input():
     if session.get("named"):
@@ -72,39 +66,54 @@ def fortune():
 
 @app.route("/result")
 def result():
-    user_id = session.get("user_id")
-    if not user_id:
-        return redirect(url_for("name_input"))
+    import random
 
-    with open(DATA_FILE, "r") as f:
-        data = json.load(f)
-    name = data[user_id]["name"]
-
+    # 점수 생성
     love_score = random.randint(1, 100)
-    social_score = random.randint(1, 100)
+    relation_score = random.randint(1, 100)
     money_score = random.randint(1, 100)
-    total_score = round((love_score + social_score + money_score) / 3)
+    total_score = round((love_score + relation_score + money_score) / 3)
 
-    def get_comment(score):
-        if score >= 80:
-            return "아주 좋은 하루가 될 거예요!"
-        elif score >= 60:
-            return "무난하고 기분 좋은 하루예요."
-        elif score >= 40:
-            return "작은 주의가 필요해요."
+    # 한줄평 로드
+    with open("data/fortune_comments.json", "r") as f:
+        comments_data = json.load(f)
+
+    def get_comment(score, category):
+        if score <= 20:
+            return comments_data[category]["0"]
+        elif score <= 40:
+            return comments_data[category]["20"]
+        elif score <= 60:
+            return comments_data[category]["40"]
+        elif score <= 80:
+            return comments_data[category]["60"]
         else:
-            return "주의가 필요한 하루입니다."
+            return comments_data[category]["80"]
 
-    return render_template("fortune_result.html",
+    love_comment = get_comment(love_score, "love")
+    relation_comment = get_comment(relation_score, "relation")
+    money_comment = get_comment(money_score, "money")
+    total_comment = get_comment(total_score, "total")
+
+    # 이름 불러오기
+    user_id = session.get("user_id")
+    name = ""
+    if user_id:
+        with open(DATA_FILE, "r") as f:
+            data = json.load(f)
+        name = data.get(user_id, {}).get("name", "")
+
+    return render_template(
+        "fortune_result.html",
         name=name,
         love_score=love_score,
-        social_score=social_score,
+        relation_score=relation_score,
         money_score=money_score,
         total_score=total_score,
-        love_comment=get_comment(love_score),
-        social_comment=get_comment(social_score),
-        money_comment=get_comment(money_score),
-        total_comment=get_comment(total_score)
+        love_comment=love_comment,
+        relation_comment=relation_comment,
+        money_comment=money_comment,
+        total_comment=total_comment
     )
 
 if __name__ == "__main__":
